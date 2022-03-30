@@ -23,9 +23,14 @@ use desub_current::{
 use sp_runtime::AccountId32;
 
 static V14_METADATA_POLKADOT_SCALE: &[u8] = include_bytes!("data/v14_metadata_polkadot.scale");
+static V14_METADATA_DEEPER_SCALE: &[u8] = include_bytes!("data/v14_metadata_deeper.scale");
 
 fn metadata() -> Metadata {
 	Metadata::from_bytes(V14_METADATA_POLKADOT_SCALE).expect("valid metadata")
+}
+
+fn deeper_metadata() -> Metadata {
+	Metadata::from_bytes(V14_METADATA_DEEPER_SCALE).expect("valid metadata")
 }
 
 fn account_id_to_value(account_id: &AccountId32) -> Value {
@@ -175,4 +180,60 @@ fn imonline_authoredblocks() {
 	let bytes = 5678u32.encode();
 	let val = decoder::decode_value_by_id(&meta, &entry.ty, &mut &*bytes).unwrap();
 	assert_eq!(val, Value::Primitive(Primitive::U32(5678)));
+}
+
+//  deeper-chain related tests
+#[test]
+fn deeper_timestamp_now() {
+	let meta = deeper_metadata();
+	let storage = decoder::decode_storage(&meta);
+
+	// Timestamp.Now(): u64
+	bytes!(storage_key = "0xf0c365c3cf59d671eb72da0e7a4113c49f1f0515f462cdcf84e0f1d6045dfcbb");
+
+	let entry = storage.decode_key(&meta, storage_key).expect("can decode storage");
+	assert!(storage_key.is_empty(), "No more bytes expected");
+	assert_eq!(entry.prefix, "Timestamp");
+	assert_eq!(entry.name, "Now");
+
+	bytes!(storage_val = "0xe16329da7f010000");
+
+	let val = decoder::decode_value_by_id(&meta, &entry.ty, storage_val).unwrap();
+	assert_eq!(val, Value::Primitive(Primitive::U64(1648632620001)));
+}
+
+#[test]
+fn deeper_system_account() {
+	let meta = deeper_metadata();
+	let storage = decoder::decode_storage(&meta);
+
+	// Timestamp.Now(): u64
+	bytes!(storage_key = "0x26aa394eea5630e07c48ae0c9558cef7b99d880ec681799c0cf30e8886371da93594ef778a4003043f6d977057644d65a88b59afe73f0e769e4f9d85cd40fd13f0874446f22d2ab6780f9cb89059307e");
+
+	let entry = storage.decode_key(&meta, storage_key).expect("can decode storage");
+	assert!(storage_key.is_empty(), "No more bytes expected");
+	assert_eq!(entry.prefix, "System");
+	assert_eq!(entry.name, "Account");
+
+	bytes!(storage_val = "0x00000000000000000100000000000000000010632d5ec76b0500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000");
+
+	let val = decoder::decode_value_by_id(&meta, &entry.ty, storage_val).unwrap();
+	assert_eq!(
+		val,
+		Value::Composite(Composite::Named(vec![
+			(String::from("nonce"), Value::Primitive(Primitive::U32(0))),
+			(String::from("consumers"), Value::Primitive(Primitive::U32(0))),
+			(String::from("providers"), Value::Primitive(Primitive::U32(1))),
+			(String::from("sufficients"), Value::Primitive(Primitive::U32(0))),
+			(
+				String::from("data"),
+				Value::Composite(Composite::Named(vec![
+					(String::from("free"), Value::Primitive(Primitive::U128(100_000_000_000_000_000_000))),
+					(String::from("reserved"), Value::Primitive(Primitive::U128(0))),
+					(String::from("misc_frozen"), Value::Primitive(Primitive::U128(0))),
+					(String::from("fee_frozen"), Value::Primitive(Primitive::U128(0))),
+				]))
+			),
+		]))
+	);
 }
