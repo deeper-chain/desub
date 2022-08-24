@@ -47,7 +47,7 @@ pub enum SubstrateType {
 	H256(primitives::H256),
 
 	/// BitVec type
-	BitVec(bitvec::vec::BitVec<BitOrderLsb0, u8>),
+	BitVec(bitvec::vec::BitVec<u8, BitOrderLsb0>),
 
 	/// Recursive Call Type
 	Call(Vec<(String, SubstrateType)>),

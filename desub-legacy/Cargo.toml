@@ -6,26 +6,26 @@ edition = "2021"
 repository = "https://github.com/paritytech/desub"
 
 [dependencies]
-log = "0.4"
+log = "0.4.17"
 thiserror = "1.0.30"
-codec = { version = "2", package = "parity-scale-codec", features = ["bit-vec"] }
+codec = { version = "3.0", package = "parity-scale-codec", features = ["bit-vec"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 onig = { version = "5.0", default-features = false }
 derive_more = "0.99.3"
 dyn-clone = "1.0"
 hex = "0.4"
-bitvec = { version = "0.20.2", features = ["serde", "alloc"] }
+bitvec = { version = "1.0", features = ["serde", "alloc"] }
 
 desub-common = { path = "../desub-common/" }
 
-pallet-democracy = { package = "pallet-democracy", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.17" }
-primitives = { package = "sp-core",  git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.17" }
-runtime-primitives = { package = "sp-runtime", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.17" }
-frame-metadata = { git = "https://github.com/paritytech/frame-metadata", branch = "insipx-aj-docs-rebase", features = ["legacy"] }
+pallet-democracy = { package = "pallet-democracy", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.24" }
+primitives = { package = "sp-core",  git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.24" }
+runtime-primitives = { package = "sp-runtime", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.24" }
+frame-metadata = { version = "15.0", features = ["legacy"] }
 
 [dev-dependencies]
-runtime-version = { package = "sp-version", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.17" }
+runtime-version = { package = "sp-version", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.24" }
 pretty_env_logger = "0.4"
 hex = "0.4"
 
